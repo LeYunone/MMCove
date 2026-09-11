@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mmcove</groupId>
+        <artifactId>mmcove-ai-agent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mmcove-core</artifactId>
+    <name>Mmcove Core</name>
+    <description>Agent 核心引擎：编排、对话、记忆</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-infra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-llm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-tools</artifactId>
+        </dependency>
+        <!-- mmcove-rag:AgentOrchestrator 经 ObjectProvider 可选注入 KnowledgeBaseRouter(知识库场景选库) -->
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-rag</artifactId>
+        </dependency>
+    </dependencies>
+</project>

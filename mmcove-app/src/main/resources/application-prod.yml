@@ -1,0 +1,10 @@
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL}
+
+logging:
+  level:
+    com.mmcove.agent: INFO
+    org.springframework.ai: WARN

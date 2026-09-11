@@ -1,0 +1,50 @@
+:root {
+  --bg: #0f1115;
+  --surface: #171a21;
+  --surface-2: #1f2430;
+  --border: #2a3140;
+  --text: #e6e9ef;
+  --muted: #9aa4b2;
+  --primary: #4f8cff;
+  --primary-weak: rgba(79, 140, 255, 0.14);
+  --user-bubble: #2b3a5c;
+  --danger: #ef4444;
+  --radius: 12px;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #3a4356; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Markdown 渲染区 */
+.md { line-height: 1.7; word-break: break-word; }
+.md p { margin: 0.5em 0; }
+.md h1, .md h2, .md h3 { margin: 1em 0 0.5em; line-height: 1.3; }
+.md ul, .md ol { padding-left: 1.5em; }
+.md blockquote {
+  margin: 0.6em 0; padding: 0.2em 0.9em; color: var(--muted);
+  border-left: 3px solid var(--border); background: var(--surface-2); border-radius: 0 6px 6px 0;
+}
+.md pre.hljs {
+  background: #0b0e14 !important; border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; overflow: auto; font-size: 13px; line-height: 1.55;
+}
+.md code:not(.hljs code) {
+  background: var(--surface-2); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.9em;
+}
+.md pre code { background: transparent; padding: 0; }
+.md table { border-collapse: collapse; margin: 0.6em 0; display: block; overflow-x: auto; }
+.md th, .md td { border: 1px solid var(--border); padding: 6px 12px; text-align: left; }
+.md th { background: var(--surface-2); }
+.md :last-child { margin-bottom: 0; }

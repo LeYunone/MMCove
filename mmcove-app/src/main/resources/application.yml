@@ -1,0 +1,141 @@
+server:
+  port: 8809
+
+spring:
+  profiles:
+    active: ${MMCOVE_PROFILE:dev}
+  application:
+    name: mmcove-agent
+
+  # 虚拟线程（JDK 21）
+  threads:
+    virtual:
+      enabled: true
+
+  # 数据源（默认对齐 docker-compose）
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:172.20.6.21}:${MYSQL_PORT:3288}/${MYSQL_DB:mmcove}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true&allowMultiQueries=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:dev123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST:172.20.6.21}
+      port: ${REDIS_PORT:6639}
+      password: ${REDIS_PASSWORD:et#%$^163tce}
+
+  # Spring AI
+  ai:
+    # MCP Server：对外暴露工具供 LLM 客户端调用
+    mcp:
+      server:
+        name: mmcove-agent
+        version: 1.0.0
+    # OpenAI 兼容（默认渠道；智谱 GLM 等 OpenAI 兼容服务亦可填入）
+    openai:
+      api-key: ${OPENAI_API_KEY:placeholder}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+    # Milvus 向量库（RAG）。多 collection 由 MilvusVectorStoreFactory 按知识库动态构建，此处仅配默认连接。
+    vectorstore:
+      milvus:
+        client:
+          host: ${MILVUS_HOST:172.20.6.21}
+          port: ${MILVUS_PORT:19530}
+        database-name: default
+        collection-name: mmcove_kb_default
+        embedding-dimension: 2048
+        metric-type: COSINE
+        index-type: IVF_FLAT
+        initialize-schema: false
+
+# MMCove 自定义配置
+mmcove:
+  ai:
+    model: openai              # 默认 ChatModel bean：openai | anthropic
+    temperature: 0.7
+    max-tokens: 8192
+    streaming: true
+    # 大屏 AI 仪表盘 / 文生图
+    dashboard:
+      flux:
+        file-save-path: ${FILE_HTTP_PATH:/tmp/flux-images}
+        file-http-url: ${FILE_HTTP_URL:http://localhost:8808/flux-images}
+        default-size: ${STR_TO_IMG_SIZE:1024x1024}
+
+  conversation:
+    max-rounds: 20
+    context-ttl-minutes: 120
+
+  # 自建用户体系 / 本地鉴权（JWT）
+  security:
+    jwt:
+      secret: ${MMCOVE_JWT_SECRET:change-me-please-to-a-long-random-secret-min-32-bytes}
+      access-ttl-minutes: 120
+      refresh-ttl-days: 7
+
+  # RAG 向量库领域（知识入库 / 场景选库 / 向量检索）
+  # Vibe 流水线提示词工厂(意图分类 → 流水线 → RAG 锚点 → 组装)
+  vibe:
+    # RAG 锚点相似度门槛(低于门槛不注入,宁缺毋滥)
+    min-score: 0.55
+    # 每个知识库的锚点召回数
+    per-kb-top-k: 4
+    # 多库合并后锚点总切片数上限(控提示词体积)
+    knowledge-top-n: 12
+    # LLM 意图兜底开关(false=纯关键词+默认兜底,降级用)
+    llm-intent-enabled: true
+    # 关键词并列且 LLM 失效时的兜底意图
+    default-intent-type: FEATURE_DEV
+    # 单个阶段产物的字符数上限(超限截断保存并警告)
+    artifact-max-chars: 100000
+    # 产物超限时的截断保存长度
+    artifact-truncate-chars: 5000
+    # 主提示词 UTF-8 字节预算(超限先砍低分锚点片)
+    prompt-max-bytes: 60000
+    # RUNNING 实例的闲置收割阈值(小时)
+    run-idle-sweep-hours: 24
+
+  rag:
+    top-k: 5
+    chunk-size: 800
+    chunk-overlap: 200
+    # Embedding 动态渠道：新增模型只加一条 channel。
+    # 维度硬约束：一个 Milvus collection ↔ 一个渠道（同维度）。
+    embedding:
+      default-channel: zhipu
+      channels:
+        - name: zhipu
+          provider: openai-compat
+          base-url: https://open.bigmodel.cn/api/paas/v4
+          api-key: ${ZHIPU_API_KEY:}
+          model: embedding-3
+          dimensions: 2048
+
+# MyBatis-Plus
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: delFlag
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+  mapper-locations: "classpath*:mapper/**/*.xml"
+
+# 健康监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.mmcove.agent: DEBUG
+    org.springframework.ai: DEBUG

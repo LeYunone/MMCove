@@ -1,0 +1,22 @@
+# 开发环境：默认走 OpenAI 兼容渠道（在后台 /admin → AI 渠道 配置实际渠道，或在此注入 key）
+# 如需切换到 Anthropic 协议（如智谱 GLM），取消下方注释并把 mmcove.ai.model 改为 anthropic。
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:placeholder}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+    # anthropic:
+    #   api-key: ${ZHIPU_API_KEY:}
+    #   base-url: ${ZHIPU_BASE_URL:https://open.bigmodel.cn/api/anthropic}
+    #   chat:
+    #     options:
+    #       model: ${ZHIPU_MODEL:glm-4.7}
+
+mmcove:
+  ai:
+    model: openai
+
+logging:
+  level:
+    com.mmcove.agent: DEBUG
+    org.springframework.ai: DEBUG

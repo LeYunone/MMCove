@@ -1,0 +1,56 @@
+# ---------- Java / Maven ----------
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+.mvn/
+mvnw
+mvnw.cmd
+
+# ---------- Node / 前端 ----------
+node_modules/
+dist/
+.vite/
+*.local
+.pnpm-store/
+
+# ---------- 前端构建产物（输出到后端 static，不入库） ----------
+mmcove-app/src/main/resources/static/chat/
+mmcove-app/src/main/resources/static/admin/
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+nbproject/
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- 日志 / 临时 ----------
+*.log
+logs/
+nul
+build-*.log
+
+# ---------- 环境变量 / 密钥 ----------
+.env
+.env.*
+!.env.example
+
+# ---------- 证书 / 私钥 ----------
+certs/
+*.pem
+*.key
+*.p12

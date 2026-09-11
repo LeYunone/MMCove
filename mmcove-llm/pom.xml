@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mmcove</groupId>
+        <artifactId>mmcove-ai-agent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mmcove-llm</artifactId>
+    <name>Mmcove LLM</name>
+    <description>LLM 网关层，基于 Spring AI 多模型适配</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-infra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mmcove</groupId>
+            <artifactId>mmcove-tools</artifactId>
+        </dependency>
+
+        <!-- Spring AI OpenAI -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+
+        <!-- Spring AI Anthropic -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-anthropic</artifactId>
+        </dependency>
+
+        <!-- Reactor（用于 Flux 流式处理） -->
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>
