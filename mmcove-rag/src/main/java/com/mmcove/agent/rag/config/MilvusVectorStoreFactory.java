@@ -61,10 +61,19 @@ public class MilvusVectorStoreFactory {
         log.info("[MilvusVectorStoreFactory] 创建 VectorStore: collection={}, channel={}",
                 kb.getCollectionName(), kb.getEmbeddingChannel());
         // 注:collection 维度由 embeddingModel.dimensions() 自动推断(Spring AI 1.0 Builder 无 dimension 方法)。
-        return MilvusVectorStore.builder(client, embeddingModel)
+        MilvusVectorStore store = MilvusVectorStore.builder(client, embeddingModel)
                 .collectionName(kb.getCollectionName())
                 .databaseName("default")
                 .initializeSchema(true)
                 .build();
+        // 手动 build 不走 Spring 生命周期,initializeSchema(true) 的建 collection 动作在
+        // afterPropertiesSet() 里 —— 必须显式调用,否则 insert 时 "can't find collection"
+        try {
+            store.afterPropertiesSet();
+        } catch (Exception e) {
+            throw new IllegalStateException("初始化 Milvus collection 失败: " + kb.getCollectionName()
+                    + ", dim=" + kb.getDimensions() + ", err=" + e.getMessage(), e);
+        }
+        return store;
     }
 }

@@ -107,8 +107,14 @@ mmcove:
     # Embedding 动态渠道：新增模型只加一条 channel。
     # 维度硬约束：一个 Milvus collection ↔ 一个渠道（同维度）。
     embedding:
-      default-channel: zhipu
+      # 默认渠道=bge-m3(自建 BGE-M3 服务,/embed 协议,免鉴权;地址经环境变量注入)
+      default-channel: ${EMBEDDING_DEFAULT_CHANNEL:bge-m3}
       channels:
+        - name: bge-m3
+          provider: bge-m3
+          base-url: ${EMBEDDING_BGE_URL:http://localhost:8012}
+          model: bge-m3
+          dimensions: 1024
         - name: zhipu
           provider: openai-compat
           base-url: https://open.bigmodel.cn/api/paas/v4

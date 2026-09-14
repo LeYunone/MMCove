@@ -78,6 +78,7 @@ public class EmbeddingModelFactory {
                 ch.getName(), ch.getProvider(), ch.getModel(), ch.getDimensions());
         return switch (ch.getProvider()) {
             case "openai-compat" -> createOpenAiCompatEmbeddingModel(ch);
+            case "bge-m3" -> new BgeM3EmbeddingModel(ch.getBaseUrl(), ch.getDimensions());
             case "onnx" -> throw new UnsupportedOperationException(
                     "ONNX 本地 Embedding 渠道暂未实现(MVP 仅支持 openai-compat): " + channelName);
             default -> throw new IllegalArgumentException(

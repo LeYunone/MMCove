@@ -13,7 +13,7 @@
     </div>
 
     <!-- 产品线表格 -->
-    <el-table :data="rows" stripe v-loading="loading" empty-text="暂无产品线,点击「新建产品线」创建">
+    <el-table :data="lines" stripe v-loading="loading" empty-text="暂无产品线,点击「新建产品线」创建">
       <el-table-column prop="code" label="编码" width="160">
         <template #default="{ row }">
           <el-tag size="small" effect="plain">{{ row.code }}</el-tag>
