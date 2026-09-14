@@ -44,7 +44,7 @@
             <span>AI 编程流水线</span>
           </el-menu-item>
           <el-menu-item index="/admin/agents">
-            <el-icon><Robot /></el-icon>
+            <el-icon><Cpu /></el-icon>
             <span>Agent 管理</span>
           </el-menu-item>
           <el-menu-item index="/admin/tokens">
