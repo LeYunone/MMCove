@@ -26,6 +26,11 @@ export function uploadDocument(kbId, { title, content, mime = 'markdown' }) {
   })
 }
 
+/** 文档的知识切片清单(知识大脑可视化) */
+export function getDocChunks(docId: number) {
+  return request.get(`/api/knowledge-bases/documents/${docId}/chunks`)
+}
+
 export function listDocuments(kbId) {
   return request.get(`/api/knowledge-bases/${kbId}/documents`)
 }

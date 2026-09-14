@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +40,7 @@ public class KnowledgeBaseController {
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
+    private final com.mmcove.agent.infra.persistence.repository.KnowledgeChunkRepository knowledgeChunkRepository;
     private final AgentKnowledgeBaseRepository agentKnowledgeBaseRepository;
     private final KnowledgeIngestService knowledgeIngestService;
     private final EmbeddingModelFactory embeddingModelFactory;
@@ -105,7 +108,27 @@ public class KnowledgeBaseController {
     }
 
     /** 文档列表(含入库状态) */
-    @GetMapping("/{id:\\d+}/documents")
+       /**
+     * 文档的知识切片清单(知识大脑可视化数据源):
+     * 文档入库时按 chunkSize 切分,每片即一个"神经元"——序号/内容预览/字符数。
+     */
+    @GetMapping("/documents/{docId:\\d+}/chunks")
+    public ApiResponse<List<Map<String, Object>>> listDocChunks(@PathVariable Long docId) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (com.mmcove.agent.common.model.entity.KnowledgeChunk chunk
+                : knowledgeChunkRepository.findByDocId(docId)) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("seq", chunk.getSeq());
+            item.put("chars", chunk.getContent() == null ? 0 : chunk.getContent().length());
+            item.put("preview", chunk.getContent() == null ? ""
+                    : chunk.getContent().replaceAll("\s+", " ").trim().substring(0,
+                            Math.min(160, chunk.getContent().replaceAll("\s+", " ").trim().length())));
+            result.add(item);
+        }
+        return ApiResponse.success(result);
+    }
+
+ @GetMapping("/{id:\\d+}/documents")
     public ApiResponse<List<KnowledgeDocument>> listDocuments(@PathVariable Long id) {
         return ApiResponse.success(knowledgeDocumentRepository.findByKbId(id));
     }

@@ -34,6 +34,7 @@
             </div>
             <div class="card-desc">{{ kb.description || '无描述' }}</div>
             <div class="card-meta">
+              <span>文档:{{ docCount(kb.id) }} 篇</span>
               <span>维度:{{ kb.dimensions }}</span>
               <span v-if="kb.keywords">关键词:{{ kb.keywords }}</span>
             </div>
@@ -86,6 +87,14 @@
     </el-dialog>
 
     <!-- 文档管理弹窗 -->
+        <!-- 知识大脑弹窗 -->
+    <el-dialog v-model="brainVisible" title="知识大脑 — 这份文档被拆分成的知识神经元" width="960px" top="4vh" destroy-on-close>
+      <KnowledgeBrain v-if="brainChunks.length" :doc-title="brainTitle" :chunks="brainChunks" />
+      <div v-else style="padding: 40px; text-align: center; color: #909399">
+        该文档暂无切片(未入库或入库失败);状态为"已入库"的文档才会生成知识神经元
+      </div>
+    </el-dialog>
+
     <el-dialog v-model="docVisible" :title="`文档管理:${currentKb ? currentKb.name : ''}`" width="780px" destroy-on-close>
       <div class="doc-upload">
         <el-input v-model="uploadTitle" placeholder="文档标题" style="width: 260px; margin-right: 8px" />
@@ -113,6 +122,12 @@
       </div>
 
       <el-table :data="documents" stripe v-loading="docLoading" max-height="320" style="margin-top: 12px">
+        <el-table-column label="知识大脑" width="96" align="center">
+          <template #default="{ row }">
+            <el-button v-if="row.status === 1" link type="primary" size="small" @click="openBrain(row)">🧠 查看</el-button>
+            <span v-else style="color:#909399;font-size:12px">未入库</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="标题" min-width="180" show-overflow-tooltip />
         <el-table-column prop="mime" label="类型" width="100">
           <template #default="{ row }">
@@ -138,12 +153,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
+getDocChunks,
   listKnowledgeBases, createKnowledgeBase, updateKnowledgeBase, deleteKnowledgeBase,
   uploadDocument, uploadDocumentFile, listDocuments, deleteDocument
 } from '@/api/knowledgeBase'
+import KnowledgeBrain from '@/components/KnowledgeBrain.vue'
 import { listProductLines } from '@/api/productLine'
 
 const FILE_MAX_BYTES = 20 * 1024 * 1024
@@ -163,6 +180,26 @@ const formSaving = ref(false)
 
 // 文档管理
 const docVisible = ref(false)
+const brainVisible = ref(false)
+const brainChunks = ref([])
+const brainTitle = ref('')
+const docCounts = ref({})
+async function openBrain(row) {
+  brainTitle.value = row.title
+  brainChunks.value = []
+  brainVisible.value = true
+  const res = await getDocChunks(row.id)
+  brainChunks.value = res.data || []
+}
+async function refreshDocCounts() {
+  const entries = await Promise.all((list.value || []).map(async (kb) => {
+    const res = await listDocuments(kb.id)
+    return [kb.id, (res.data || []).filter(d => d.status === 1).length]
+  }))
+  docCounts.value = Object.fromEntries(entries)
+}
+function docCount(kbId) { return docCounts.value[kbId] ?? '-' }
+watch(list, () => refreshDocCounts(), { immediate: true })
 const currentKb = ref(null)
 const documents = ref([])
 const docLoading = ref(false)
